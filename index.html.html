@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090e1b">
+<title>Private Video Vault</title>
+<style>
+:root{--bg:#090e1b;--panel:#121b2e;--text:#f3f6ff;--muted:#9aa8c2;--accent:#8067ff;--teal:#3ce0ce;--line:#ffffff19}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 10% 0%,#28244f 0,transparent 38%),radial-gradient(ellipse at 95% 20%,#103a40 0,transparent 30%),var(--bg);color:var(--text);font-family:Inter,"Noto Sans Bengali",system-ui,sans-serif;min-height:100vh}
+.wrap{width:min(1160px,calc(100% - 32px));margin:auto;padding:26px 0 44px}nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:44px}.brand{display:flex;align-items:center;gap:11px;font-weight:800}.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--teal));display:grid;place-items:center;font-size:21px}.private{font-size:12px;color:#c7d2e8;border:1px solid var(--line);padding:8px 12px;border-radius:99px}
+.kicker{font-size:12px;letter-spacing:2px;color:var(--teal);font-weight:800}h1{font-size:clamp(34px,6vw,60px);line-height:1.1;letter-spacing:-1.5px;margin:13px 0}h1 span{background:linear-gradient(90deg,#b9aaff,#57e8d9);color:transparent;background-clip:text;-webkit-background-clip:text}.lead{color:var(--muted);line-height:1.8;max-width:720px}.hero{margin-bottom:26px}
+.panel{padding:21px;background:#121b2edd;border:1px solid var(--line);border-radius:22px;box-shadow:0 20px 60px #0003;margin-bottom:22px}label{display:block;font-size:13px;font-weight:750;margin-bottom:8px;color:#dce5fa}input,select{min-width:0;width:100%;padding:12px 13px;background:#080e1b;color:var(--text);border:1px solid #ffffff20;border-radius:12px;outline:none;font:inherit;font-size:13px}input:focus,select:focus{border-color:#9583ff}.row{display:flex;gap:10px}.row input{flex:1}button,.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:0;border-radius:12px;padding:13px 16px;background:linear-gradient(135deg,var(--accent),#547fff);color:white;font-weight:800;font-size:13px;text-decoration:none;cursor:pointer;white-space:nowrap}button:hover,.btn:hover{filter:brightness(1.1)}.secondary{background:#ffffff0c;border:1px solid var(--line);color:#e5edff}.hint{font-size:12px;color:var(--muted);line-height:1.7;margin:10px 0 0}.status{display:none;margin-top:13px;padding:12px 14px;border-radius:12px;background:#28213f;color:#ded6ff;font-size:13px;line-height:1.7}
+.sectionhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:26px 0 14px}h2{font-size:20px;margin:0}.tag{font-size:11px;color:#8deadd;border:1px solid #3ce0ce44;padding:6px 9px;border-radius:99px}
+.filters{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr auto;gap:10px;align-items:end}.field label{font-size:12px}.field{min-width:0}.filter-actions{display:flex;gap:8px}.summary{font-size:12px;color:var(--muted);margin:13px 0 0}
+.videos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.video-card{overflow:hidden;border:1px solid var(--line);border-radius:17px;background:#ffffff07}.thumb{aspect-ratio:16/9;background:linear-gradient(135deg,#28234f,#123b43);display:grid;place-items:center;position:relative;overflow:hidden}.thumb video{width:100%;height:100%;object-fit:cover;background:#05070c}.playmark{position:absolute;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:#ffffffd9;color:#17152a;font-size:19px;pointer-events:none}.video-card video[controls]~.playmark{display:none}.vinfo{padding:13px}.vtitle{font-weight:750;font-size:14px;overflow-wrap:anywhere}.meta{font-size:11px;color:var(--muted);margin-top:7px;line-height:1.6}.vactions{display:flex;gap:8px;margin-top:12px}.vactions a{font-size:12px;flex:1;text-align:center;padding:9px 6px;border-radius:9px;background:#ffffff0b;color:#dfe7ff;text-decoration:none;border:1px solid var(--line)}
+.empty{padding:28px;text-align:center;color:var(--muted);border:1px dashed #ffffff2c;border-radius:18px;line-height:1.8}.empty b{display:block;color:var(--text);margin-bottom:5px}.note{display:flex;gap:12px;margin-top:20px;padding:16px;border:1px solid #ffce6a35;background:#ffce6a0b;border-radius:16px}.note p{margin:0;color:var(--muted);font-size:12px;line-height:1.8}.note b{display:block;color:#f4e3bd;margin-bottom:5px}
+footer{text-align:center;color:#75829e;font-size:12px;margin-top:30px}
+@media(max-width:850px){.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.filter-actions{grid-column:1/-1}.videos{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.wrap{width:calc(100% - 22px);padding-top:18px}nav{margin-bottom:32px}.private{font-size:10px}.row{flex-direction:column}.filters{grid-template-columns:1fr 1fr}.field.search{grid-column:1/-1}.videos{grid-template-columns:1fr}.panel{padding:15px}.sectionhead{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav><div class="brand"><div class="logo">▶</div><div>Private <span style="color:#9aa8c2;font-weight:500">Video Vault</span></div></div><div class="private">🔒 PRIVATE DRIVE</div></nav>
+<section class="hero"><div class="kicker">YOUR PERSONAL VIDEO SPACE</div><h1>তোমার ভিডিও,<br><span>তোমার নিজের লাইব্রেরি।</span></h1><p class="lead">ভিডিও সরাসরি এই ওয়েবসাইটে প্লে করো, নাম দিয়ে খোঁজো এবং তারিখ/সময় অনুযায়ী সাজাও। ব্যক্তিগত Drive-এর ফাইল আনতে Google অনুমোদন প্রয়োজন; নিচে Drive লিংক আগে থেকেই দেওয়া আছে।</p></section>
+
+<section class="panel">
+<label for="folderUrl">Google Drive ফোল্ডার লিংক</label>
+<div class="row"><input id="folderUrl" value="https://drive.google.com/drive/folders/16w2rrHlXshGqTUCJ7PisB20jJtUMBREf" placeholder="Google Drive folder URL"><button id="openFolder">ফোল্ডার খুলুন ↗</button></div>
+<p class="hint">এখান থেকে Drive ফোল্ডার খোলা যাবে। ব্যক্তিগত ফোল্ডারের সব ভিডিও ওয়েবসাইটে স্বয়ংক্রিয়ভাবে আনতে Google Drive API + OAuth সেটআপ লাগবে।</p>
+</section>
+
+<div class="sectionhead"><h2>ভিডিও লাইব্রেরি</h2><span class="tag">PLAY · SEARCH · FILTER</span></div>
+<section class="panel">
+<div class="filters">
+ <div class="field search"><label for="search">ভিডিও খুঁজুন</label><input id="search" placeholder="ভিডিওর নাম লিখুন…"></div>
+ <div class="field"><label for="fromDate">শুরুর তারিখ</label><input type="date" id="fromDate"></div>
+ <div class="field"><label for="toDate">শেষের তারিখ</label><input type="date" id="toDate"></div>
+ <div class="field"><label for="sort">সাজান</label><select id="sort"><option value="new">নতুন আগে</option><option value="old">পুরোনো আগে</option><option value="az">নাম A–Z</option><option value="za">নাম Z–A</option></select></div>
+ <div class="filter-actions"><button id="apply">ফিল্টার</button><button class="secondary" id="reset">রিসেট</button></div>
+</div>
+<p class="summary" id="summary">ডেমো ভিডিও দেখানো হচ্ছে। তোমার নিজের ভিডিও যোগ করতে নিচের নির্দেশনা দেখো।</p>
+</section>
+<div id="videoGrid" class="videos"></div>
+<div id="empty" class="empty" style="display:none"><b>কোনো ভিডিও পাওয়া যায়নি</b>সার্চ বা তারিখ পরিবর্তন করে আবার চেষ্টা করো।</div>
+
+<section class="note"><div style="font-size:22px">🔐</div><div><b>প্রাইভেট Drive-এর সীমাবদ্ধতা</b><p>এই HTML ফাইল একা তোমার Google অ্যাকাউন্টে ঢুকে ব্যক্তিগত ফাইল তালিকা পড়তে পারে না। শুধু ফোল্ডার URL দিলে ভিডিওর নাম, আপলোডের তারিখ এবং সরাসরি প্লেব্যাকের অনুমতি পাওয়া যায় না। সম্পূর্ণ স্বয়ংক্রিয় করার নিরাপদ পদ্ধতি হলো Google Cloud-এ Drive API চালু করে OAuth অনুমোদন যোগ করা। আপাতত নিচের “নিজের ভিডিও যোগ করুন” বাটন দিয়ে ভিডিও ফাইল নির্বাচন করলে সেগুলো এই পেজে প্লে হবে এবং নির্বাচিত ফাইলের নাম/তারিখ অনুযায়ী ফিল্টার করা যাবে।</p></div></section>
+<section class="panel" style="margin-top:18px">
+<label for="localVideos">নিজের ডিভাইস থেকে ভিডিও যোগ করুন</label>
+<input id="localVideos" type="file" accept="video/*" multiple>
+<p class="hint">নির্বাচিত ভিডিওগুলো এই ব্রাউজার ট্যাবে প্লে হবে। এগুলো Drive-এ আপলোড হবে না এবং পেজ রিফ্রেশ করলে আবার নির্বাচন করতে হতে পারে।</p>
+</section>
+<footer>Private Video Vault · ব্যক্তিগত ভিডিওর অনুমতি Google Drive নিয়ন্ত্রণ করে</footer>
+</div>
+<script>
+const defaultFolder='https://drive.google.com/drive/folders/16w2rrHlXshGqTUCJ7PisB20jJtUMBREf';
+const folderInput=document.getElementById('folderUrl');
+document.getElementById('openFolder').addEventListener('click',()=>{
+ const val=folderInput.value.trim();
+ if(!/^https:\/\/drive\.google\.com\/drive\/folders\/[a-zA-Z0-9_-]+/.test(val)){alert('সঠিক Google Drive folder link দিন।');return}
+ window.open(val,'_blank','noopener');
+});
+let videos=[];
+const grid=document.getElementById('videoGrid'),empty=document.getElementById('empty'),summary=document.getElementById('summary');
+function addFiles(fileList){
+ const files=[...fileList].filter(f=>f.type.startsWith('video/'));
+ files.forEach(f=>videos.push({name:f.name,date:new Date(f.lastModified),url:URL.createObjectURL(f),size:f.size,local:true}));
+ render();
+}
+document.getElementById('localVideos').addEventListener('change',e=>addFiles(e.target.files));
+function fmtDate(d){return d.toLocaleString('bn-BD',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}
+function render(){
+ const q=document.getElementById('search').value.trim().toLowerCase();
+ const from=document.getElementById('fromDate').value;
+ const to=document.getElementById('toDate').value;
+ const sort=document.getElementById('sort').value;
+ let list=videos.filter(v=>{
+  const day=v.date.toISOString().slice(0,10);
+  return v.name.toLowerCase().includes(q)&&(!from||day>=from)&&(!to||day<=to);
+ });
+ list.sort((a,b)=>sort==='old'?a.date-b.date:sort==='az'?a.name.localeCompare(b.name):sort==='za'?b.name.localeCompare(a.name):b.date-a.date);
+ grid.innerHTML='';
+ list.forEach(v=>{
+  const card=document.createElement('article');card.className='video-card';
+  const thumb=document.createElement('div');thumb.className='thumb';
+  const player=document.createElement('video');player.src=v.url;player.controls=true;player.preload='metadata';player.playsInline=true;
+  player.addEventListener('play',()=>{document.querySelectorAll('.thumb video').forEach(other=>{if(other!==player)other.pause()})});
+  thumb.appendChild(player);
+  const info=document.createElement('div');info.className='vinfo';
+  const title=document.createElement('div');title.className='vtitle';title.textContent=v.name;
+  const meta=document.createElement('div');meta.className='meta';meta.textContent='তারিখ ও সময়: '+fmtDate(v.date)+' · '+(v.size/1024/1024).toFixed(1)+' MB';
+  const actions=document.createElement('div');actions.className='vactions';
+  const open=document.createElement('a');open.href=v.url;open.target='_blank';open.rel='noopener';open.textContent='আলাদা করে খুলুন';
+  const download=document.createElement('a');download.href=v.url;download.download=v.name;download.textContent='ডাউনলোড';
+  actions.append(open,download);info.append(title,meta,actions);card.append(thumb,info);grid.append(card);
+ });
+ empty.style.display=list.length?'none':'block';
+ summary.textContent=`মোট ${videos.length}টি নির্বাচিত ভিডিও · ফিল্টারে পাওয়া গেছে ${list.length}টি`;
+}
+document.getElementById('apply').addEventListener('click',render);
+document.getElementById('reset').addEventListener('click',()=>{document.getElementById('search').value='';document.getElementById('fromDate').value='';document.getElementById('toDate').value='';document.getElementById('sort').value='new';render()});
+document.getElementById('search').addEventListener('input',render);
+document.getElementById('sort').addEventListener('change',render);
+document.getElementById('fromDate').addEventListener('change',render);
+document.getElementById('toDate').addEventListener('change',render);
+render();
+</script>
+</body>
+</html>
