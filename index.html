@@ -5,693 +5,354 @@
   <base target="_top">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <title>Drive Audio Library</title>
+  <title>My Audio Library</title>
 
   <style>
-    :root {
-      --bg: #0b1020;
-      --panel: #131b2e;
-      --panel2: #19243a;
-      --text: #f4f7ff;
-      --muted: #a3afc8;
-      --accent: #8b7cff;
-      --accent2: #38d9b5;
-      --border: rgba(255,255,255,.09);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      background:
-        radial-gradient(ellipse at top left, #20204b 0, transparent 42%),
-        var(--bg);
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
-      min-height: 100vh;
-      padding-bottom: 145px;
+      background: #0b1020;
+      color: #f4f6ff;
+      font-family: Arial, sans-serif;
     }
 
-    button, input {
-      font: inherit;
+    .wrap {
+      max-width: 900px;
+      margin: auto;
+      padding: 24px 16px 40px;
     }
 
-    .container {
-      width: min(100% - 32px, 1000px);
-      margin: 0 auto;
-    }
+    h1 { margin: 0 0 8px; font-size: 30px; }
+    .sub { color: #a8b1c9; margin-bottom: 22px; }
 
-    header {
-      padding: 42px 0 25px;
-    }
-
-    .brand {
+    .stats, .toolbar {
       display: flex;
-      align-items: center;
-      gap: 14px;
+      gap: 12px;
+      margin-bottom: 16px;
     }
 
-    .logo {
-      display: grid;
-      place-items: center;
-      width: 54px;
-      height: 54px;
-      border-radius: 17px;
-      background: linear-gradient(135deg, var(--accent), #42d9c0);
-      color: #10152a;
-      font-size: 26px;
-      font-weight: 900;
-      flex-shrink: 0;
-    }
-
-    h1 {
-      font-size: clamp(25px, 5vw, 38px);
-      margin: 0 0 7px;
-      letter-spacing: -.8px;
-    }
-
-    .subtitle {
-      color: var(--muted);
-      margin: 0;
-      font-size: 14px;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-      margin: 18px 0 24px;
+    .stat, .panel, .item {
+      background: #151e32;
+      border: 1px solid #29334b;
+      border-radius: 14px;
     }
 
     .stat {
-      padding: 18px;
-      background: rgba(19, 27, 46, .88);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-    }
-
-    .stat-label {
-      color: var(--muted);
-      font-size: 13px;
-      margin-bottom: 8px;
-    }
-
-    .stat-value {
-      font-size: 25px;
-      font-weight: 800;
-      overflow-wrap: anywhere;
-    }
-
-    .toolbar {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 17px;
-    }
-
-    .search-wrap {
       flex: 1;
-      position: relative;
+      padding: 16px;
       min-width: 0;
     }
 
-    .search-icon {
-      position: absolute;
-      left: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      opacity: .7;
-    }
+    .muted { color: #a8b1c9; font-size: 13px; }
+    .number { font-size: 23px; font-weight: bold; margin-top: 7px; }
 
-    #search {
-      width: 100%;
+    input {
+      flex: 1;
       min-width: 0;
-      padding: 14px 14px 14px 43px;
-      border: 1px solid var(--border);
-      background: var(--panel);
-      color: var(--text);
-      border-radius: 13px;
-      outline: none;
+      background: #151e32;
+      border: 1px solid #35405b;
+      border-radius: 10px;
+      padding: 13px;
+      color: white;
+      font-size: 15px;
     }
 
-    #search:focus {
-      border-color: var(--accent);
-    }
-
-    .button {
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      gap: 7px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
+    button, .btn {
+      display: inline-block;
       padding: 11px 14px;
-      color: var(--text);
-      background: var(--panel2);
+      border: 0;
+      border-radius: 9px;
+      background: #7868f6;
+      color: white;
       text-decoration: none;
       cursor: pointer;
       font-size: 13px;
-      font-weight: 700;
-      white-space: nowrap;
-      transition: transform .15s, opacity .15s;
+      font-weight: bold;
+      text-align: center;
     }
 
-    .button:hover {
-      transform: translateY(-1px);
-      opacity: .9;
+    .btn-download { background: #176b58; }
+    .btn-drive { background: #303c56; }
+
+    #status {
+      display: none;
+      padding: 14px;
+      margin: 12px 0;
+      background: #241f37;
+      border-radius: 10px;
+      color: #e4dcff;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
     }
 
-    .button:disabled {
-      opacity: .45;
-      cursor: not-allowed;
-      transform: none;
-    }
+    h2 { font-size: 19px; margin: 24px 0 12px; }
 
-    .button.primary {
-      background: var(--accent);
-      color: #fff;
-      border-color: transparent;
-    }
-
-    .button.download {
-      color: var(--accent2);
-    }
-
-    .section-heading {
+    .item {
       display: flex;
-      justify-content: space-between;
       align-items: center;
       gap: 12px;
-      margin: 25px 0 13px;
+      padding: 13px;
+      margin-bottom: 10px;
     }
 
-    .section-heading h2 {
-      font-size: 18px;
-      margin: 0;
-    }
-
-    #resultCount {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    #message {
-      display: none;
-      padding: 17px;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      color: var(--muted);
-      line-height: 1.6;
-      background: var(--panel);
-      margin: 15px 0;
-      overflow-wrap: anywhere;
-    }
-
-    .file-list {
-      display: grid;
-      gap: 10px;
-    }
-
-    .file {
-      display: flex;
-      align-items: center;
-      gap: 13px;
-      padding: 14px;
-      border: 1px solid var(--border);
-      background: rgba(19, 27, 46, .88);
-      border-radius: 16px;
-      min-width: 0;
-      transition: border-color .15s, background .15s;
-    }
-
-    .file:hover {
-      border-color: rgba(139,124,255,.55);
-    }
-
-    .file.active {
-      border-color: var(--accent);
-      background: rgba(139,124,255,.10);
-    }
-
-    .file-icon {
-      width: 44px;
-      height: 44px;
+    .music-icon {
+      width: 42px;
+      height: 42px;
       flex-shrink: 0;
-      border-radius: 13px;
       display: grid;
       place-items: center;
-      background: #24284b;
-      font-size: 21px;
+      background: #28264c;
+      border-radius: 12px;
+      font-size: 22px;
     }
 
-    .file-info {
-      flex: 1;
-      min-width: 0;
+    .info { flex: 1; min-width: 0; }
+    .filename { font-weight: bold; overflow-wrap: anywhere; }
+    .meta { margin-top: 6px; color: #a8b1c9; font-size: 12px; }
+
+    .actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
     }
 
-    .file-name {
-      font-weight: 700;
-      line-height: 1.4;
+    .panel { padding: 16px; }
+
+    #playerTitle {
+      font-weight: bold;
+      margin-bottom: 12px;
       overflow-wrap: anywhere;
-      margin-bottom: 5px;
     }
 
-    .file-meta {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .file-actions {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      flex-shrink: 0;
-    }
-
-    .play-small {
-      background: rgba(139,124,255,.15);
-      border-color: rgba(139,124,255,.3);
-    }
-
-    .empty {
-      padding: 35px 18px;
-      text-align: center;
-      color: var(--muted);
-      background: var(--panel);
-      border: 1px dashed var(--border);
-      border-radius: 16px;
-      line-height: 1.7;
-    }
-
-    .player {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 10;
-      background: rgba(11,16,32,.96);
-      border-top: 1px solid var(--border);
-      backdrop-filter: blur(18px);
-      padding: 14px 0 calc(14px + env(safe-area-inset-bottom));
-    }
-
-    .player-inner {
-      width: min(100% - 32px, 1000px);
-      margin: 0 auto;
-    }
-
-    .now-playing {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-      min-width: 0;
-    }
-
-    .now-icon {
-      font-size: 20px;
-    }
-
-    .now-text {
-      min-width: 0;
-      flex: 1;
-    }
-
-    .now-label {
-      font-size: 11px;
-      color: var(--accent2);
-      margin-bottom: 3px;
-      text-transform: uppercase;
-      letter-spacing: .8px;
-    }
-
-    #nowTitle {
-      font-size: 13px;
-      font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    audio {
+    #preview {
       display: block;
       width: 100%;
-      height: 40px;
+      height: 120px;
+      border: 0;
+      border-radius: 10px;
+      background: #fff;
     }
 
-    footer {
-      text-align: center;
-      color: var(--muted);
+    .hint {
+      color: #a8b1c9;
       font-size: 12px;
-      padding: 25px 0;
+      line-height: 1.6;
+      margin-top: 10px;
     }
 
-    @media (max-width: 600px) {
-      header {
-        padding-top: 28px;
-      }
-
-      .container {
-        width: min(100% - 22px, 1000px);
-      }
-
-      .stats {
-        gap: 9px;
-      }
-
-      .stat {
-        padding: 14px;
-      }
-
-      .stat-value {
-        font-size: 21px;
-      }
-
-      .toolbar {
-        flex-wrap: wrap;
-      }
-
-      .search-wrap {
-        flex-basis: 100%;
-      }
-
-      .toolbar > .button {
-        flex: 1;
-      }
-
-      .file {
-        gap: 9px;
-        padding: 11px;
-      }
-
-      .file-icon {
-        width: 38px;
-        height: 38px;
-      }
-
-      .file-actions {
-        gap: 5px;
-      }
-
-      .file-actions .button {
-        padding: 10px;
-        min-width: 38px;
-      }
-
-      .button-label {
-        display: none;
-      }
-
-      .player-inner {
-        width: calc(100% - 22px);
-      }
+    @media(max-width: 600px) {
+      .wrap { padding: 20px 11px; }
+      h1 { font-size: 25px; }
+      .toolbar { flex-wrap: wrap; }
+      input { flex-basis: 100%; }
+      .item { align-items: flex-start; flex-wrap: wrap; }
+      .info { width: calc(100% - 60px); }
+      .actions { width: 100%; padding-left: 54px; }
+      .actions .btn { flex: 1; padding: 11px 8px; }
+      #preview { height: 120px; }
     }
   </style>
 </head>
 
 <body>
-  <header class="container">
-    <div class="brand">
-      <div class="logo">♫</div>
-      <div>
-        <h1>Audio Library</h1>
-        <p class="subtitle">Your music and audio collection in one place.</p>
+  <main class="wrap">
+    <h1>♫ My Audio Library</h1>
+    <div class="sub">Listen to and download audio from Google Drive.</div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="muted">Total audio files</div>
+        <div class="number" id="total">0</div>
+      </div>
+      <div class="stat">
+        <div class="muted">Total size</div>
+        <div class="number" id="totalSize">0 B</div>
       </div>
     </div>
-  </header>
-
-  <main class="container">
-    <section class="stats">
-      <div class="stat">
-        <div class="stat-label">Total audio files</div>
-        <div class="stat-value" id="totalFiles">—</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-label">Total size</div>
-        <div class="stat-value" id="totalSize">—</div>
-      </div>
-    </section>
 
     <div class="toolbar">
-      <div class="search-wrap">
-        <span class="search-icon">⌕</span>
-        <input
-          type="search"
-          id="search"
-          placeholder="Search audio files..."
-          aria-label="Search audio files"
-          autocomplete="off"
-        >
+      <input id="search" type="search" placeholder="Search audio files...">
+      <button id="refresh" type="button">Refresh</button>
+    </div>
+
+    <div id="status" role="status"></div>
+
+    <h2>Audio files <span class="muted" id="count"></span></h2>
+    <div id="list"></div>
+
+    <h2>Audio player</h2>
+    <div class="panel">
+      <div id="playerTitle">Select a file below to listen</div>
+      <iframe
+        id="preview"
+        title="Google Drive audio player"
+        allow="autoplay"
+        src="about:blank">
+      </iframe>
+      <div class="hint">
+        The audio plays using Google Drive's built-in preview.
+        If it does not play, check the file's sharing permissions.
       </div>
-
-      <button class="button" id="refreshBtn" type="button">
-        ↻ Refresh
-      </button>
     </div>
-
-    <div class="section-heading">
-      <h2>Your audio files</h2>
-      <span id="resultCount">Loading...</span>
-    </div>
-
-    <div id="message" role="status"></div>
-    <div id="fileList" class="file-list"></div>
-
-    <footer>
-      Drive Audio Library
-    </footer>
   </main>
 
-  <section class="player">
-    <div class="player-inner">
-      <div class="now-playing">
-        <span class="now-icon">♫</span>
-        <div class="now-text">
-          <div class="now-label">Now playing</div>
-          <div id="nowTitle">Choose an audio file to play</div>
-        </div>
-      </div>
-
-      <audio id="audioPlayer" controls preload="none">
-        Your browser does not support audio playback.
-      </audio>
-    </div>
-  </section>
-
   <script>
-    const state = {
-      files: [],
-      currentId: null
-    };
+    let allFiles = [];
 
-    const fileList = document.getElementById('fileList');
-    const searchInput = document.getElementById('search');
-    const message = document.getElementById('message');
-    const player = document.getElementById('audioPlayer');
-    const nowTitle = document.getElementById('nowTitle');
-    const refreshBtn = document.getElementById('refreshBtn');
+    const list = document.getElementById('list');
+    const statusBox = document.getElementById('status');
+    const search = document.getElementById('search');
+    const preview = document.getElementById('preview');
+    const playerTitle = document.getElementById('playerTitle');
 
-    function formatSize(bytes) {
-      if (bytes === 0) return '0 B';
-      if (!bytes || bytes < 0) return 'Unknown size';
+    function showStatus(text) {
+      statusBox.textContent = text;
+      statusBox.style.display = 'block';
+    }
 
+    function hideStatus() {
+      statusBox.textContent = '';
+      statusBox.style.display = 'none';
+    }
+
+    function sizeText(bytes) {
+      if (!bytes) return '0 B';
       const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-      const index = Math.min(
+      const i = Math.min(
         Math.floor(Math.log(bytes) / Math.log(1024)),
         units.length - 1
       );
-
-      return (bytes / Math.pow(1024, index)).toFixed(
-        index === 0 ? 0 : 1
-      ) + ' ' + units[index];
-    }
-
-    function showMessage(text) {
-      message.textContent = text;
-      message.style.display = 'block';
-    }
-
-    function hideMessage() {
-      message.textContent = '';
-      message.style.display = 'none';
+      return (bytes / Math.pow(1024, i)).toFixed(i ? 1 : 0)
+        + ' ' + units[i];
     }
 
     function loadFiles() {
-      refreshBtn.disabled = true;
-      refreshBtn.textContent = 'Loading...';
-      fileList.replaceChildren();
-      showMessage('Loading audio files from Google Drive...');
+      const refresh = document.getElementById('refresh');
+      refresh.disabled = true;
+      list.replaceChildren();
+      showStatus('Loading files from Google Drive...');
 
       google.script.run
         .withSuccessHandler(function(files) {
-          state.files = Array.isArray(files) ? files : [];
+          allFiles = Array.isArray(files) ? files : [];
+          refresh.disabled = false;
 
-          document.getElementById('totalFiles').textContent =
-            state.files.length;
+          document.getElementById('total').textContent = allFiles.length;
 
-          const totalBytes = state.files.reduce(function(total, file) {
-            return total + (Number(file.size) || 0);
+          const total = allFiles.reduce(function(sum, file) {
+            return sum + (Number(file.size) || 0);
           }, 0);
 
-          document.getElementById('totalSize').textContent =
-            formatSize(totalBytes);
+          document.getElementById('totalSize').textContent = sizeText(total);
 
-          refreshBtn.disabled = false;
-          refreshBtn.textContent = '↻ Refresh';
-
+          hideStatus();
           renderFiles();
         })
         .withFailureHandler(function(error) {
-          refreshBtn.disabled = false;
-          refreshBtn.textContent = '↻ Refresh';
-
-          showMessage(
-            'Could not load audio files. Check the folder ID, ' +
-            'Apps Script permissions, and deployment settings. ' +
-            (error && error.message ? error.message : '')
+          refresh.disabled = false;
+          showStatus(
+            'Could not load files. Make sure the script has permission ' +
+            'to access your Google Drive folder. Error: ' +
+            (error && error.message ? error.message : 'Unknown error')
           );
-
-          document.getElementById('resultCount').textContent =
-            'Loading failed';
+          document.getElementById('count').textContent = '';
         })
         .getAudioFiles();
     }
 
-    function renderFiles() {
-      const query = searchInput.value.trim().toLowerCase();
+    function makeButton(text, url, cssClass) {
+      const a = document.createElement('a');
+      a.className = 'btn ' + cssClass;
+      a.textContent = text;
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      return a;
+    }
 
-      const filtered = state.files.filter(function(file) {
-        return file.name.toLowerCase().includes(query);
+    function renderFiles() {
+      const q = search.value.trim().toLowerCase();
+
+      const files = allFiles.filter(function(file) {
+        return file.name.toLowerCase().includes(q);
       });
 
-      fileList.replaceChildren();
-      document.getElementById('resultCount').textContent =
-        filtered.length + (filtered.length === 1 ? ' file' : ' files');
+      list.replaceChildren();
+      document.getElementById('count').textContent =
+        '(' + files.length + ')';
 
-      hideMessage();
-
-      if (state.files.length === 0) {
-        showMessage(
-          'No audio files were found in this folder. ' +
-          'Make sure it contains audio files and that the script ' +
-          'has permission to access it.'
+      if (!allFiles.length) {
+        showStatus(
+          'No audio files found. Check that your folder contains audio ' +
+          'files and that you authorized the Apps Script.'
         );
         return;
       }
 
-      if (filtered.length === 0) {
-        showMessage('No files match your search.');
+      if (!files.length) {
+        showStatus('No files match your search.');
         return;
       }
 
-      filtered.forEach(function(file) {
-        const card = document.createElement('article');
-        card.className = 'file';
+      hideStatus();
 
-        if (file.id === state.currentId) {
-          card.classList.add('active');
-        }
+      files.forEach(function(file) {
+        const item = document.createElement('div');
+        item.className = 'item';
 
         const icon = document.createElement('div');
-        icon.className = 'file-icon';
+        icon.className = 'music-icon';
         icon.textContent = '♫';
 
         const info = document.createElement('div');
-        info.className = 'file-info';
+        info.className = 'info';
 
-        const name = document.createElement('div');
-        name.className = 'file-name';
-        name.textContent = file.name;
-        name.title = file.name;
+        const filename = document.createElement('div');
+        filename.className = 'filename';
+        filename.textContent = file.name;
 
         const meta = document.createElement('div');
-        meta.className = 'file-meta';
-        meta.textContent = formatSize(Number(file.size) || 0);
+        meta.className = 'meta';
+        meta.textContent = sizeText(Number(file.size) || 0);
 
-        info.appendChild(name);
+        info.appendChild(filename);
         info.appendChild(meta);
 
         const actions = document.createElement('div');
-        actions.className = 'file-actions';
+        actions.className = 'actions';
 
-        const playBtn = document.createElement('button');
-        playBtn.type = 'button';
-        playBtn.className = 'button play-small';
-        playBtn.innerHTML = '<span>▶</span><span class="button-label">Play</span>';
-        playBtn.title = 'Play audio';
-        playBtn.setAttribute('aria-label', 'Play ' + file.name);
-
-        playBtn.addEventListener('click', function() {
+        const play = document.createElement('button');
+        play.type = 'button';
+        play.textContent = '▶ Play';
+        play.addEventListener('click', function() {
           playFile(file);
         });
 
-        const downloadBtn = document.createElement('a');
-        downloadBtn.className = 'button download';
-        downloadBtn.href = file.downloadUrl;
-        downloadBtn.target = '_blank';
-        downloadBtn.rel = 'noopener noreferrer';
-        downloadBtn.innerHTML =
-          '<span>↓</span><span class="button-label">Download</span>';
-        downloadBtn.title = 'Download audio';
-        downloadBtn.setAttribute('aria-label', 'Download ' + file.name);
+        actions.appendChild(play);
+        actions.appendChild(
+          makeButton('↓ Download', file.downloadUrl, 'btn-download')
+        );
+        actions.appendChild(
+          makeButton('Open Drive', file.driveUrl, 'btn-drive')
+        );
 
-        const driveBtn = document.createElement('a');
-        driveBtn.className = 'button';
-        driveBtn.href = file.driveUrl;
-        driveBtn.target = '_blank';
-        driveBtn.rel = 'noopener noreferrer';
-        driveBtn.innerHTML =
-          '<span>↗</span><span class="button-label">Drive</span>';
-        driveBtn.title = 'Open in Google Drive';
-        driveBtn.setAttribute('aria-label', 'Open ' + file.name + ' in Drive');
-
-        actions.appendChild(playBtn);
-        actions.appendChild(downloadBtn);
-        actions.appendChild(driveBtn);
-
-        card.appendChild(icon);
-        card.appendChild(info);
-        card.appendChild(actions);
-
-        fileList.appendChild(card);
+        item.appendChild(icon);
+        item.appendChild(info);
+        item.appendChild(actions);
+        list.appendChild(item);
       });
     }
 
     function playFile(file) {
-      if (!file || !file.playUrl) return;
-
-      state.currentId = file.id;
-      nowTitle.textContent = file.name;
-      player.src = file.playUrl;
-      player.load();
-
-      player.play().catch(function() {
-        showMessage(
-          'Playback did not start. The file may not be publicly accessible, ' +
-          'or Google Drive may be showing a confirmation page instead of ' +
-          'the audio stream. Check the file sharing settings or open it ' +
-          'using the Drive button.'
-        );
-      });
-
-      renderFiles();
+      playerTitle.textContent = file.name;
+      preview.src = file.previewUrl;
+      preview.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
-    searchInput.addEventListener('input', renderFiles);
-    refreshBtn.addEventListener('click', loadFiles);
+    search.addEventListener('input', renderFiles);
 
-    player.addEventListener('error', function() {
-      if (state.currentId) {
-        showMessage(
-          'The audio could not be played directly. Check that the file is ' +
-          'shared as “Anyone with the link — Viewer”. Some Google Drive ' +
-          'files may not stream directly in the browser.'
-        );
-      }
-    });
+    document.getElementById('refresh').addEventListener('click', loadFiles);
 
     loadFiles();
   </script>
